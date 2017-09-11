@@ -91,7 +91,7 @@ void Promise<T, BatonT>::setWith(F&& func) {
 
 template <class T, class BatonT>
 template <class F>
-typename Promise<T, BatonT>::value_type Promise<T, BatonT>::await(F&& func) {
+typename Promise<T, BatonT>::value_type Promise<T, BatonT>::awaitFn(F&& func) {
   folly::Try<value_type> result;
   std::exception_ptr funcException;
 

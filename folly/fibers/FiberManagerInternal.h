@@ -534,7 +534,7 @@ inline void addTaskFinally(F&& func, G&& finally) {
  * @return data which was used to fulfill the promise.
  */
 template <typename F>
-typename FirstArgOf<F>::type::value_type inline await(F&& func);
+typename FirstArgOf<F>::type::value_type inline awaitFn(F&& func);
 
 /**
  * If called from a fiber, immediately switches to the FiberManager's context

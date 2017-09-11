@@ -103,7 +103,7 @@ class EventCount {
    * condition() throws, and then rethrow.
    */
   template <class Condition>
-  void await(Condition condition);
+  void awaitFn(Condition condition);
 
  private:
   void doNotify(int n) noexcept;
@@ -174,7 +174,7 @@ inline void EventCount::wait(Key key) noexcept {
 }
 
 template <class Condition>
-void EventCount::await(Condition condition) {
+void EventCount::awaitFn(Condition condition) {
   if (condition()) return;  // fast path
 
   // condition() is the only thing that may throw, everything else is

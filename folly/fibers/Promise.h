@@ -78,7 +78,7 @@ class Promise {
    * @return data which was used to fulfill the promise.
    */
   template <class F>
-  static value_type await(F&& func);
+  static value_type awaitFn(F&& func);
 
  private:
   Promise(folly::Try<T>& value, BatonT& baton);
