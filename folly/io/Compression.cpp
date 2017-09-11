@@ -33,6 +33,7 @@
 
 #if FOLLY_HAVE_LIBZ
 #include <folly/io/compression/Zlib.h>
+namespace zlib = folly::io::zlib;
 #endif
 
 #if FOLLY_HAVE_LIBLZMA
@@ -61,8 +62,6 @@
 
 using folly::io::compression::detail::dataStartsWithLE;
 using folly::io::compression::detail::prefixToStringLE;
-
-namespace zlib = folly::io::zlib;
 
 namespace folly {
 namespace io {

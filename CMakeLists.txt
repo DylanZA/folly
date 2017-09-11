@@ -108,7 +108,7 @@ list(REMOVE_ITEM hfiles
   ${FOLLY_DIR}/experimental/io/AsyncIO.h
 )
 
-add_library(folly_base OBJECT
+add_library(folly_base STATIC
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/EscapeTables.cpp
@@ -143,6 +143,7 @@ set(FOLLY_LINK_LIBRARIES
   ${DOUBLE_CONVERSION_LIBRARY}
   ${LIBEVENT_LIB}
   ${LIBGFLAGS_LIBRARY}
+  shlwapi.lib
   ${LIBGLOG_LIBRARY}
   Iphlpapi.lib
   Ws2_32.lib
@@ -160,7 +161,7 @@ target_include_directories(folly_base
 )
 
 foreach (LIB ${FOLLY_SHINY_DEPENDENCIES})
-  target_include_directories(folly_base PUBLIC $<TARGET_PROPERTY:${LIB},INCLUDE_DIRECTORIES>)
+  target_include_directories(folly_base PUBLIC $<TARGET_PROPERTY:${LIB},INTERFACE_INCLUDE_DIRECTORIES>)
 endforeach()
 
 if (FOLLY_HAVE_PTHREAD)
@@ -173,8 +174,19 @@ add_executable(GenerateFingerprintTables
   ${FOLLY_DIR}/build/GenerateFingerprintTables.cpp
   $<TARGET_OBJECTS:folly_base>
 )
+
 target_link_libraries(GenerateFingerprintTables PRIVATE ${FOLLY_LINK_LIBRARIES})
 target_include_directories(GenerateFingerprintTables PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+
+target_include_directories(GenerateFingerprintTables
+  PUBLIC
+    ${DOUBLE_CONVERSION_INCLUDE_DIR}
+    ${LIBGFLAGS_INCLUDE_DIR}
+    ${LIBGLOG_INCLUDE_DIR}
+    ${LIBEVENT_INCLUDE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
 add_dependencies(GenerateFingerprintTables folly_base)
 apply_folly_compile_options_to_target(GenerateFingerprintTables)
 set_property(TARGET GenerateFingerprintTables PROPERTY FOLDER "Build")
@@ -197,6 +209,15 @@ add_library(folly_fingerprint STATIC
 )
 target_link_libraries(folly_fingerprint PRIVATE ${FOLLY_LINK_LIBRARIES})
 target_include_directories(folly_fingerprint PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+target_include_directories(folly_fingerprint
+  PUBLIC
+    ${DOUBLE_CONVERSION_INCLUDE_DIR}
+    ${LIBGFLAGS_INCLUDE_DIR}
+    ${LIBGLOG_INCLUDE_DIR}
+    ${LIBEVENT_INCLUDE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
 add_dependencies(folly_fingerprint folly_base)
 apply_folly_compile_options_to_target(folly_fingerprint)
 
@@ -208,7 +229,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp
   COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp
   DEPENDS folly_base folly_fingerprint
 )
-add_library(folly ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp $<TARGET_OBJECTS:folly_base>)
+add_library(folly STATIC ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp $<TARGET_OBJECTS:folly_base>)
 apply_folly_compile_options_to_target(folly)
 source_group("" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp)
 

@@ -203,7 +203,9 @@ void triplet_loop(
         // Generates case statements from 127 to 2 of form:
         // case 127:
         //    CRCtriplet(crc, next, -127);
-        BOOST_PP_REPEAT_FROM_TO(0, 126, CASEREPEAT_TRIPLET, 126);
+        BOOST_PP_REPEAT_FROM_TO(0, 50, CASEREPEAT_TRIPLET, 126);
+        BOOST_PP_REPEAT_FROM_TO(51, 100, CASEREPEAT_TRIPLET, 126);
+        BOOST_PP_REPEAT_FROM_TO(101, 126, CASEREPEAT_TRIPLET, 126);
 
         // For the last byte, the three crc32c streams must be combined
         // using carry-less multiplication.

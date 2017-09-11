@@ -59,18 +59,21 @@ auto adl_end(Type&& instance) -> decltype(end(instance)) {
 
 } // namespace adl
 
+template<typename... Ts> struct make_void { typedef void type; };
+template<typename... Ts> using void_type= typename make_void<Ts...>::type;
+
 /**
  * Enable if the range supports fetching via non member get<>()
  */
 template <typename T>
 using EnableIfNonMemberGetFound =
-    void_t<decltype(adl::adl_get<0>(std::declval<T>()))>;
+    void_type<decltype(adl::adl_get<0>(std::declval<T>()))>;
 /**
  * Enable if the range supports fetching via a member get<>()
  */
 template <typename T>
 using EnableIfMemberGetFound =
-    void_t<decltype(std::declval<T>().template get<0>())>;
+    void_type<decltype(std::declval<T>().template get<0>())>;
 
 /**
  * A get that tries ADL get<> first and if that is not found tries to execute
@@ -102,7 +105,7 @@ struct Get<Index, Type, EnableIfMemberGetFound<Type>> {
  * Check if the range is a tuple or a range
  */
 template <typename Type, typename T = typename std::decay<Type>::type>
-using EnableIfTuple = void_t<
+using EnableIfTuple = void_type<
     decltype(Get<0, T>::impl(std::declval<T>())),
     decltype(std::tuple_size<T>::value)>;
 
@@ -110,7 +113,7 @@ using EnableIfTuple = void_t<
  * Check if the range is a range
  */
 template <typename Type, typename T = typename std::decay<Type>::type>
-using EnableIfRange = void_t<
+using EnableIfRange = void_type<
     decltype(adl::adl_begin(std::declval<T>())),
     decltype(adl::adl_end(std::declval<T>()))>;
 
@@ -136,14 +139,14 @@ struct DeclvalSequence<Sequence, EnableIfTuple<Sequence>> {
  * breakability to the loop
  */
 template <typename Sequence, typename Func>
-using EnableIfAcceptsOneArgument = void_t<decltype(std::declval<Func>()(
+using EnableIfAcceptsOneArgument = void_type<decltype(std::declval<Func>()(
     std::declval<typename DeclvalSequence<Sequence>::type>()))>;
 template <typename Sequence, typename Func>
-using EnableIfAcceptsTwoArguments = void_t<decltype(std::declval<Func>()(
+using EnableIfAcceptsTwoArguments = void_type<decltype(std::declval<Func>()(
     std::declval<typename DeclvalSequence<Sequence>::type>(),
     std::integral_constant<std::size_t, 0>{}))>;
 template <typename Sequence, typename Func>
-using EnableIfAcceptsThreeArguments = void_t<decltype(std::declval<Func>()(
+using EnableIfAcceptsThreeArguments = void_type<decltype(std::declval<Func>()(
     std::declval<typename DeclvalSequence<Sequence>::type>(),
     std::integral_constant<std::size_t, 0>{},
     adl::adl_begin(std::declval<Sequence>())))>;
@@ -170,7 +173,7 @@ using EnableIfRandomAccessIterators = std::enable_if_t<std::is_same<
     std::random_access_iterator_tag>::value>;
 template <typename Sequence, typename Index>
 using EnableIfHasIndexingOperator =
-    void_t<decltype(std::declval<Sequence>()[std::declval<Index>()])>;
+    void_type<decltype(std::declval<Sequence>()[std::declval<Index>()])>;
 
 /**
  * Implementation for the range iteration, this provides specializations in
@@ -227,7 +230,7 @@ void for_each_range_impl(Sequence&& range, Func& func) {
                                auto&& ele, auto index, auto) -> decltype(auto) {
     return func(std::forward<decltype(ele)>(ele), index);
   };
-  for_each_range_impl(std::forward<Sequence>(range), three_arg_adaptor);
+  //for_each_range_impl(std::forward<Sequence>(range), three_arg_adaptor);
 }
 
 template <
@@ -240,7 +243,7 @@ void for_each_range_impl(Sequence&& range, Func& func) {
   auto three_arg_adaptor = [&func](auto&& ele, auto, auto) -> decltype(auto) {
     return func(std::forward<decltype(ele)>(ele));
   };
-  for_each_range_impl(std::forward<Sequence>(range), three_arg_adaptor);
+  //for_each_range_impl(std::forward<Sequence>(range), three_arg_adaptor);
 }
 
 /**
@@ -263,7 +266,7 @@ struct ForEachTupleImpl {
     static_cast<void>(std::initializer_list<int>{
         (func(
              Get<Indices, Sequence>::impl(std::forward<Sequence>(seq)),
-             std::integral_constant<std::size_t, Indices>{}),
+              std::integral_constant<std::size_t, Indices>{}),
          0)...});
   }
 };

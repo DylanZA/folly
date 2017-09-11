@@ -178,8 +178,23 @@ class HistogramBuckets {
   size_t getPercentileBucketIdx(
       double pct,
       CountFn countFromBucket,
-      double* lowPct = nullptr,
-      double* highPct = nullptr) const;
+      double* lowPct ,
+      double* highPct) const;
+
+  template <typename CountFn>
+  size_t getPercentileBucketIdx(
+    double pct,
+    CountFn countFromBucket) const {
+    return getPercentileBucketIdx<CountFn>(pct, std::move(countFromBucket), nullptr, nullptr);
+  }
+
+  template <typename CountFn>
+  size_t getPercentileBucketIdx(
+    double pct,
+    CountFn countFromBucket,
+    double* low) const {
+    return getPercentileBucketIdx<CountFn>(pct, std::move(countFromBucket), low, nullptr);
+  }
 
   /**
    * Estimate the value at the specified percentile.

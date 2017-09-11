@@ -40,6 +40,8 @@ template size_t detail::HistogramBuckets<int64_t, Histogram<int64_t>::Bucket>::
         Histogram<int64_t>::CountFromBucket countFromBucket,
         double* lowPct,
         double* highPct) const;
+
+
 template int64_t detail::HistogramBuckets<int64_t, Histogram<int64_t>::Bucket>::
     getPercentileEstimate<
         Histogram<int64_t>::CountFromBucket,
