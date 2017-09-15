@@ -141,6 +141,10 @@ bool setThreadName(pthread_t pid, StringPiece name) {
   return setThreadName(id, name);
 #endif
 }
+#else
+bool setThreadName(std::thread::native_handle_type tid, StringPiece name) {
+  return false;
+}
 #endif
 
 bool setThreadName(StringPiece name) {

@@ -108,7 +108,7 @@ list(REMOVE_ITEM hfiles
   ${FOLLY_DIR}/experimental/io/AsyncIO.h
 )
 
-add_library(folly_base STATIC
+add_library(folly_base OBJECT 
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/EscapeTables.cpp
